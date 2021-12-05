@@ -1,0 +1,19 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  local:
+    push: false # dont push builds automatically
+  artifacts:
+    - image: evanwarddev/auth
+      context: auth # folder contains all code for this image
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          # relative to context
+          - src: "src/**/*.ts"
+            dest: .
