@@ -1,31 +1,11 @@
-import express from 'express';
-import 'express-async-errors';
-import mongoose from 'mongoose';
-
-// route related imports
-import { default as currentUserRouter } from './routes/currentuser';
-import { default as signinRouter } from './routes/signin';
-import { default as signoutRouter } from './routes/signout';
-import { default as signupRouter } from './routes/signup';
-// error related imports
-import errorHandler from './middlewares/errorHandler';
-import NotFoundError from './errors/notFoundError';
-
-const app = express();
-app.use(express.json());
-
-app.use(currentUserRouter);
-app.use(signinRouter);
-app.use(signoutRouter);
-app.use(signupRouter);
-
-app.all('*', async () => {
-    throw new NotFoundError();
-});
-
-app.use(errorHandler);
+import mongoose from "mongoose";
+import app from "./app";
 
 const start = async () => {
+    if (!process.env.JWT_KEY) {
+        throw new Error('JWT_KEY must be defined');
+    }
+
     try {
         // mongodb://<host/service>:port/<dbname>
         await mongoose.connect('mongodb://auth-mongo-srv:27017/auth');
@@ -35,7 +15,7 @@ const start = async () => {
     }
 
     app.listen(3000, () => {
-        console.log('Listening on 3000');
+        console.log('Listening on 3000!');
     });
 };
 
